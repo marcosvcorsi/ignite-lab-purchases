@@ -13,7 +13,7 @@ import { promisify } from 'node:util';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
-  private logger;
+  private logger: Logger;
   private audience: string;
   private domain: string;
 
@@ -32,13 +32,15 @@ export class AuthorizationGuard implements CanActivate {
 
     const { req, res } = GqlExecutionContext.create(context).getContext();
 
+    this.logger.debug({ domain: this.domain, audience: this.audience });
+
     const checkJwt = promisify(
       jwt({
         secret: expressJwtSecret({
           cache: true,
           rateLimit: true,
           jwksRequestsPerMinute: 5,
-          jwksUri: `https://${this.domain}/.well-known/jwks.json`,
+          jwksUri: `${this.domain}.well-known/jwks.json`,
         }),
         audience: this.audience,
         issuer: this.domain,
@@ -51,7 +53,7 @@ export class AuthorizationGuard implements CanActivate {
 
       return true;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error({ error, message: error.message });
 
       throw new UnauthorizedException();
     }
