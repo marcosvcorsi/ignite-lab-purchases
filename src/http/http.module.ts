@@ -7,6 +7,7 @@ import { DatabaseModule } from '../database/database.module';
 import { ProductsService } from 'src/services/products.service';
 import { PurchasesResolver } from './graphql/resolvers/purchases.resolver';
 import { PurchasesService } from 'src/services/purchases.service';
+import { CustomersService } from 'src/services/customers.service';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PurchasesService } from 'src/services/purchases.service';
     PurchasesResolver,
     ProductsService,
     PurchasesService,
+    CustomersService,
   ],
 })
 export class HttpModule {}

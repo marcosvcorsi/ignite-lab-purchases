@@ -1,4 +1,10 @@
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Field,
+  ID,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { Product } from './product';
 
 enum PurchaseStatus {
@@ -26,5 +32,11 @@ export class Purchase {
   @Field(() => Product)
   product: Product;
 
+  productId: string;
+}
+
+@InputType()
+export class CreatePurchaseInput {
+  @Field()
   productId: string;
 }
