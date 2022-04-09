@@ -9,6 +9,7 @@ import { PurchasesResolver } from './graphql/resolvers/purchases.resolver';
 import { PurchasesService } from 'src/services/purchases.service';
 import { CustomersService } from 'src/services/customers.service';
 import { CustomersResolver } from './graphql/resolvers/customers.resolver';
+import { MessagingModule } from 'src/messaging/messaging.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CustomersResolver } from './graphql/resolvers/customers.resolver';
       driver: ApolloDriver,
     }),
     DatabaseModule,
+    MessagingModule,
   ],
   providers: [
     ProductsResolver,

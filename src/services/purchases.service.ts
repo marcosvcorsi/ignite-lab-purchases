@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PurchaseStatus } from '@prisma/client';
 import { AuthUser } from 'src/http/auth/current-user';
+import { KafkaService } from 'src/messaging/kafka.service';
 import { PrismaService } from '../database/prisma/prisma.service';
 
 type CreatePurchaseParams = {
@@ -10,7 +11,10 @@ type CreatePurchaseParams = {
 
 @Injectable()
 export class PurchasesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly kafkaService: KafkaService,
+  ) {}
 
   async findAll() {
     return this.prisma.purchase.findMany({
@@ -56,12 +60,25 @@ export class PurchasesService {
       });
     }
 
-    return this.prisma.purchase.create({
+    const purchase = await this.prisma.purchase.create({
       data: {
         status: PurchaseStatus.PENDING,
         customerId: customer.id,
         productId,
       },
     });
+
+    this.kafkaService.emit('purchases.purchase-created', {
+      customer: {
+        authUserId: customer.authUserId,
+      },
+      product: {
+        id: product.id,
+        title: product.title,
+        slug: product.slug,
+      },
+    });
+
+    return purchase;
   }
 }
